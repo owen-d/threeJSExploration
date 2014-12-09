@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <title>three.js - Particles</title>
+    <meta charset="utf-8">
+    <style>
+      body {
+        font-family: Monospace;
+        background-color: #f0f0f0;
+        margin: 0px;
+        overflow: hidden;
+      }
+    </style>
+    <script src="../three.js/build/three.min.js"></script>
+    <script src="./ParticleTest.js"></script>
+  </head>
+  <body>
+
+<script>
+
+  var scene = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
+
+        var renderer = new THREE.WebGLRenderer();
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        document.body.appendChild( renderer.domElement );
+        camera.position.z = 5;
+        camera.position.set( 0, 0, 500 );
+
+  
+
+  var particleCount = 2000,
+    particles = new THREE.Geometry,
+    pMaterial = new THREE.PointCloudMaterial({
+      color: 0xFFFFFF,
+      size: 20,
+      map: THREE.ImageUtils.loadTexture(
+         "particle_small.png"
+       ),
+       blending: THREE.AdditiveBlending,
+       transparent: true
+    });
+
+
+  for (var i = 0; i < particleCount; i++) {
+    var pX = Math.random()*500 - 250,
+        pY = Math.random()*500 - 250,
+        pZ = Math.random()*500 - 250,
+        particle = new THREE.Vector3(pX, pY, pZ);
+        particle.velocity = {};
+        particle.velocity.y = 0;
+        particles.vertices.push(particle);
+  }
+
+  var particleSystem = new THREE.PointCloud(particles, pMaterial);
+
+  scene.add(particleSystem);
+
+  var simulateRain = function(){
+    var pCount = particleCount;
+    while (pCount--) {
+      var particle = particles.vertices[pCount];
+      if (particle.y < -200) {
+        particle.y = 200;
+        particle.velocity.y = 0;
+      }
+
+      particle.velocity.y -= Math.random() * .1;
+
+      particle.y += particle.velocity.y;
+    }
+
+    particles.verticesNeedUpdate = true;
+  };
+
+        
+
+  var render = function () {
+    requestAnimationFrame( render );
+
+    // particleSystem.rotation.y += 0.01;
+    simulateRain();
+
+    renderer.render(scene, camera);
+  };
+
+  render();
+
+
+
+
+
+
+</script>
+
+
+  </body>
+</html>
